@@ -82,38 +82,12 @@ public class DriveSubsystem extends SubsystemBase {
     /** Creates a new DriveSubsystem object */
   public DriveSubsystem() {
 
-    SparkMaxConfig config = new SparkMaxConfig();
-    config.idleMode(IdleMode.kCoast);
-    
-    // Do some common initialization on all motors
-    for(SparkMax m : m_leadMotorGroup) {
-      m.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-      m.stopMotor();
-    }
+    SparkMaxConfig cfgLeftLeader, cfgLeftFollower, cfgRightLeader, cfgRightFollower;
 
-    // Set the followers
-    
-    config.follow(m_leftLeader);
-    m_leftFollower.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    SparkMaxConfig[] motorConfigs = { cfgLeftLeader, cfgLeftFollower, cfgRightLeader, cfgRightFollower };
+    SparkMaxConfig[] leadMotorConfigs = { cfgLeftLeader, cfgRightLeader };
 
-    config.follow(m_rightLeader);
-    m_rightFollower.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    config.closedLoop.pidf(DriveTrainConstants.kP, DriveTrainConstants.kI, DriveTrainConstants.kD, DriveTrainConstants.kFF);
-    config.closedLoop.iZone(DriveTrainConstants.kIz);
-    config.closedLoop.outputRange(DriveTrainConstants.kMinOutput, DriveTrainConstants.kMaxOutput);
-
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-    m_rightLeader.setInverted(true);
-
-    // Set up the encoder objects from the motor controller objects that have
-    // already been instantiated in the class level declaraions above
-    m_leftEncoder = m_leftLeader.getEncoder();
-    m_rightEncoder = m_rightLeader.getEncoder();
- 
-    // Set the conversion factor so encoder getPosition() returns the distamce
+        // Set the conversion factor so encoder getPosition() returns the distamce
     // traveled, given one rotation of wheel covers 2 * Math.PI * kWheelRadius 
     // and the native getPosition() returns number of revolutions of the motor
     // and one revolution of motor is geared down by kGearReduction
@@ -121,12 +95,58 @@ public class DriveSubsystem extends SubsystemBase {
     double distPerRev = 2 * Math.PI * kWheelRadius / kEncoderResolution / kGearReduction;
     // set velocity factor to convert RPM to meters per second
     double velFactor = distPerRev / 60d;
-    
-    for(RelativeEncoder encoder: new RelativeEncoder[]{m_leftEncoder, m_rightEncoder} ) {
-      encoder.setPositionConversionFactor( distPerRev );
-      encoder.setVelocityConversionFactor(velFactor);
+
+    // Set up config objects for all motors.
+    for( SparkMaxConfig config : motorConfigs ) {
+      config = new SparkMaxConfig();
+      config.idleMode(IdleMode.kCoast);
     }
 
+    // Do additional config for the lead motors
+    for( SparkMaxConfig config : leadMotorConfigs ) {
+
+      config.closedLoop.pidf(DriveTrainConstants.kP, DriveTrainConstants.kI, DriveTrainConstants.kD, DriveTrainConstants.kFF);
+      config.closedLoop.iZone(DriveTrainConstants.kIz);
+      config.closedLoop.outputRange(DriveTrainConstants.kMinOutput, DriveTrainConstants.kMaxOutput);
+
+      config.encoder.positionConversionFactor( distPerRev );
+      config.encoder.velocityConversionFactor(velFactor);
+
+    }
+
+    // Do some common initialization on all motors
+ //   for(SparkMaxConfig config: leadMotorConfigs) {
+ //     config.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+ //     m.stopMotor();
+ //   }
+
+   // We need to invert one side of the drivetrain so that positive voltages
+    // result in both sides moving forward. Depending on how your robot's
+    // gearbox is constructed, you might have to invert the left side instead.
+    cfgRightLeader.inverted(true);
+
+    // Set the configuration for the followers to follow the leaders
+    
+    cfgLeftFollower.follow(m_leftLeader);
+    cfgRightFollower.follow(m_rightLeader);
+
+
+    // Stop all the motors
+    for(SparkMax motor : m_motorGroup) motor.stopMotor();
+
+    
+    // Apply the configurations for each motor to the motors themselves
+    m_leftLeader.configure(cfgLeftLeader, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_rightLeader.configure(cfgRightLeader, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_leftFollower.configure(cfgLeftFollower, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_rightFollower.configure(cfgRightFollower, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+  
+    // Set up the encoder objects from the motor controller objects that have
+    // already been instantiated in the class level declaraions above
+    m_leftEncoder = m_leftLeader.getEncoder();
+    m_rightEncoder = m_rightLeader.getEncoder();
+ 
      // Calculates the next value of the output
      
     m_odometry = new DifferentialDriveOdometry(
@@ -136,14 +156,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putData("Field", m_fieldSim);
 
-    int i = 1;
-        for( SparkPIDController controller : new SparkPIDController[]{m_leftPIDController, m_rightPIDController} ) {
-          SmartDashboard.putNumber("P"+i, controller.getP() );
-          SmartDashboard.putNumber("I"+i, controller.getI() );
-          SmartDashboard.putNumber("FF"+i, controller.getFF() );
-          i++;
-        }
-  
   }
   
 
@@ -175,8 +187,9 @@ public class DriveSubsystem extends SubsystemBase {
   
   public void setSpeeds(DifferentialDriveWheelSpeeds speeds) {
 
-      m_leftPIDController.setReference( speeds.leftMetersPerSecond, SparkMax.ControlType.kVelocity);
-      m_rightPIDController.setReference( speeds.rightMetersPerSecond, SparkMax.ControlType.kVelocity);
+    //TODO: Fix setting reference in new class objects
+//      m_leftPIDController.setReference( speeds.leftMetersPerSecond, SparkMax.ControlType.kVelocity);
+//      m_rightPIDController.setReference( speeds.rightMetersPerSecond, SparkMax.ControlType.kVelocity);
       //m_leftLeader.set(speeds.leftMetersPerSecond);
      // m_rightLeader.set(speeds.rightMetersPerSecond);
     }
