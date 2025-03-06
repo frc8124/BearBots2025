@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
-import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
@@ -41,6 +40,7 @@ import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -86,8 +86,8 @@ public class Drivetrain extends Subsystem {
   private final PIDController mRightPIDController = new PIDController(Constants.Drive.kP, Constants.Drive.kI,
       Constants.Drive.kD);
 
-  private final AHRS mGyro = new AHRS();
-  private final Elevator mElevator = Elevator.getInstance();
+  private final ADXRS450_Gyro mGyro = new ADXRS450_Gyro();
+//  private final Elevator mElevator = Elevator.getInstance();
 
   private final DifferentialDriveKinematics mKinematics = new DifferentialDriveKinematics(kTrackWidth);
 
@@ -284,13 +284,16 @@ public class Drivetrain extends Subsystem {
       mPeriodicIO.diffWheelSpeeds = mKinematics
           .toWheelSpeeds(new ChassisSpeeds(xSpeed * kSpeedModeScale, 0, rot * kSlowModeRotScale));
     } else {
-      Elevator.ElevatorState state = mElevator.getState();
+  
+  //    Elevator.ElevatorState state = mElevator.getState();
 
-      boolean highSetPoint = state == Elevator.ElevatorState.L4 ||
-          state == Elevator.ElevatorState.L3 ||
-          state == Elevator.ElevatorState.A2;
+//      boolean highSetPoint = state == Elevator.ElevatorState.L4 ||
+//          state == Elevator.ElevatorState.L3 ||
+//          state == Elevator.ElevatorState.A2;
+      boolean highSetPoint = false;
 
       double scale = (highSetPoint ? kTippyModeScale : 1.0);
+      
 
       mPeriodicIO.diffWheelSpeeds = mKinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed * scale, 0, rot));
     }
@@ -308,10 +311,6 @@ public class Drivetrain extends Subsystem {
   public void clearTurnPIDAccumulation() {
     mLeftPIDController.reset();
     mRightPIDController.reset();
-  }
-
-  public void setGyroAngleAdjustment(double angle) {
-    mGyro.setAngleAdjustment(angle);
   }
 
   /** Update robot odometry. */

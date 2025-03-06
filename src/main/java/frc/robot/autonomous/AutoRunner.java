@@ -34,7 +34,7 @@ public class AutoRunner {
 
   private AutoRunner() {
     // Use this to set the default auto mode
-    AutoMode defaultAuto = AutoMode.PP_TEST_MODE;
+    AutoMode defaultAuto = AutoMode.DEFAULT; //PP_TEST_MODE;
 
     m_autoChooser = AutoChooser.getInstance();
 

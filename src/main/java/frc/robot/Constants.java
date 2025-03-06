@@ -129,10 +129,10 @@ public class Constants {
     public static final double kV = 2.8559;// 2.6;
     public static final double kA = 0.4864;
 
-    public static final int kFLMotorId = 8;
-    public static final int kBLMotorId = 7;
-    public static final int kFRMotorId = 6;
-    public static final int kBRMotorId = 5;
+    public static final int kFLMotorId = 1;
+    public static final int kBLMotorId = 2;
+    public static final int kFRMotorId = 4;
+    public static final int kBRMotorId = 3;
   }
 
   public static class Field {

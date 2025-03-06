@@ -54,11 +54,11 @@ public class Robot extends LoggedRobot {
   // Robot subsystems
   private List<Subsystem> m_allSubsystems = new ArrayList<>();
   private final Drivetrain m_drive = Drivetrain.getInstance();
-  private final Coral m_coral = Coral.getInstance();
-  private final Algae m_algae = Algae.getInstance();
-  private final Elevator m_elevator = Elevator.getInstance();
+  // private final Coral m_coral = Coral.getInstance();
+  // private final Algae m_algae = Algae.getInstance();
+  // private final Elevator m_elevator = Elevator.getInstance();
 
-  public final LEDs m_leds = LEDs.getInstance();
+  // public final LEDs m_leds = LEDs.getInstance();
 
   // Auto stuff
   private Task m_currentTask;
@@ -79,11 +79,11 @@ public class Robot extends LoggedRobot {
     // Add all subsystems to the list
     // m_allSubsystems.add(m_compressor);
     m_allSubsystems.add(m_drive);
-    m_allSubsystems.add(m_coral);
-    m_allSubsystems.add(m_algae);
-    m_allSubsystems.add(m_elevator);
+  //  m_allSubsystems.add(m_coral);
+  //  m_allSubsystems.add(m_algae);
+  //  m_allSubsystems.add(m_elevator);
 
-    m_allSubsystems.add(m_leds);
+  //  m_allSubsystems.add(m_leds);
 
     // Set up the Field2d object for simulation
     SmartDashboard.putData("Field", m_field);
@@ -137,7 +137,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    m_leds.breathe();
+ //   m_leds.breathe();
   }
 
   double speed = 0;
@@ -158,10 +158,10 @@ public class Robot extends LoggedRobot {
     m_drive.drive(xSpeed, rot);
 
     // FINAL DRIVER CONTROLS
-    if (m_driverController.getWantsScoreCoral()) {
+/*     if (m_driverController.getWantsScoreCoral()) {
       scorePressed = true;
 
-      if (m_elevator.getState() == Elevator.ElevatorState.STOW) {
+       if (m_elevator.getState() == Elevator.ElevatorState.STOW) {
         m_coral.scoreL1();
       } else {
         m_coral.scoreL24();
@@ -221,11 +221,12 @@ public class Robot extends LoggedRobot {
     // RobotTelemetry.print("Resetting elevator");
     // m_elevator.reset();
     // }
+    */
   }
 
   @Override
   public void disabledInit() {
-    m_leds.rainbow();
+    // m_leds.rainbow();
     // m_leds.setColor(Color.kRed);
 
     speed = 0;
