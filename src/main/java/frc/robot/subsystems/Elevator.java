@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.time.Period;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
@@ -12,6 +14,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.simulation.SimulatableCANSparkMax;
@@ -43,10 +46,15 @@ public class Elevator extends Subsystem {
   private TrapezoidProfile.State mGoalState = new TrapezoidProfile.State();
   private double prevUpdateTime = Timer.getFPGATimestamp();
 
+  private DigitalInput mLowerLimitSwitch;
+  
   private Elevator() {
     super("Elevator");
 
+    mLowerLimitSwitch = new DigitalInput( Constants.Elevator.kLowerLimitId );
+
     mPeriodicIO = new PeriodicIO();
+
 
     SparkMaxConfig elevatorConfig = new SparkMaxConfig();
 
@@ -57,7 +65,10 @@ public class Elevator extends Subsystem {
     elevatorConfig.smartCurrentLimit(Constants.Elevator.kMaxCurrent);
 
     elevatorConfig.idleMode(IdleMode.kBrake);
-    elevatorConfig.limitSwitch.reverseLimitSwitchEnabled(true);
+
+    // Cannot use SparkMax controller limit switch function at this time, because
+    // we do not have the stupid connector to plug the switch into the controller.
+    elevatorConfig.limitSwitch.reverseLimitSwitchEnabled(false);
 
     // LEFT ELEVATOR MOTOR
     mLeftMotor = new SimulatableCANSparkMax(Constants.Elevator.kElevatorLeftMotorId, MotorType.kBrushless);
@@ -114,10 +125,19 @@ public class Elevator extends Subsystem {
 
   @Override
   public void writePeriodicOutputs() {
+
     double curTime = Timer.getFPGATimestamp();
     double dt = curTime - prevUpdateTime;
+
     prevUpdateTime = curTime;
+
+    if (mLowerLimitSwitch.get()) {
+      // Have hit limit switch
+      reset();
+    }
+
     if (mPeriodicIO.is_elevator_pos_control) {
+      
       // Update goal
       mGoalState.position = mPeriodicIO.elevator_target;
 
@@ -132,6 +152,7 @@ public class Elevator extends Subsystem {
           ClosedLoopSlot.kSlot0,
           Constants.Elevator.kG,
           ArbFFUnits.kVoltage);
+
     } else {
       mCurState.position = mLeftEncoder.getPosition();
       mCurState.velocity = 0;

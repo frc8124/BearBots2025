@@ -11,8 +11,9 @@ public class Constants {
   }
 
   public static class Elevator {
-    public static final int kElevatorLeftMotorId = 9;
-    public static final int kElevatorRightMotorId = 10;
+    public static final int kElevatorLeftMotorId = 6;
+    public static final int kElevatorRightMotorId = 5;
+    public static final int kLowerLimitId = 0;
 
     public static final double kP = 0.15;
     public static final double kI = 0;
@@ -99,7 +100,7 @@ public class Constants {
     public static final int kPivotMotorId = 10;
 
     // DIO
-    public static final int k_pivotEncoderId = 0;
+    public static final int k_pivotEncoderId = 1;
     public static final int k_intakeLimitSwitchId = 2;
 
     // Absolute encoder offset

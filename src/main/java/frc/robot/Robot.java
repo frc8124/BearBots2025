@@ -56,7 +56,7 @@ public class Robot extends LoggedRobot {
   private final Drivetrain m_drive = Drivetrain.getInstance();
   // private final Coral m_coral = Coral.getInstance();
   // private final Algae m_algae = Algae.getInstance();
-  // private final Elevator m_elevator = Elevator.getInstance();
+  private final Elevator m_elevator = Elevator.getInstance();
 
   // public final LEDs m_leds = LEDs.getInstance();
 
@@ -81,7 +81,7 @@ public class Robot extends LoggedRobot {
     m_allSubsystems.add(m_drive);
   //  m_allSubsystems.add(m_coral);
   //  m_allSubsystems.add(m_algae);
-  //  m_allSubsystems.add(m_elevator);
+    m_allSubsystems.add(m_elevator);
 
   //  m_allSubsystems.add(m_leds);
 
@@ -176,33 +176,33 @@ public class Robot extends LoggedRobot {
     } else if (m_driverController.getWantsGroundAlgae()) {
       m_algae.groundIntake();
     }
-
+*/
     // FINAL OPERATOR CONTROLS
     if (m_operatorController.getWantsElevatorStow()) {
       m_elevator.goToElevatorStow();
-      m_algae.stow();
+   //   m_algae.stow();
     } else if (m_operatorController.getWantsElevatorL2()) {
       m_elevator.goToElevatorL2();
-      m_algae.stow();
+   //   m_algae.stow();
     } else if (m_operatorController.getWantsElevatorL3()) {
       m_elevator.goToElevatorL3();
-      m_algae.stow();
+   //   m_algae.stow();
     } else if (m_operatorController.getWantsElevatorL4()) {
       m_elevator.goToElevatorL4();
-      m_algae.stow();
+   //   m_algae.stow();
     } else if (m_operatorController.getWantsA1()) {
       m_elevator.goToAlgaeLow();
-      m_algae.grabAlgae();
+   //   m_algae.grabAlgae();
     } else if (m_operatorController.getWantsA2()) {
       m_elevator.goToAlgaeHigh();
-      m_algae.grabAlgae();
+   //   m_algae.grabAlgae();
     } else if (m_operatorController.getWantsStopAlgae()) {
-      m_algae.stopAlgae();
-      m_algae.stow();
+   //   m_algae.stopAlgae();
+   //   m_algae.stow();
     } else if (m_operatorController.getWantsGroundAlgae()) {
-      m_algae.groundIntake();
+   //   m_algae.groundIntake();
     } else if (m_operatorController.getWantsCoralIntake()) {
-      m_coral.intake();
+  //    m_coral.intake();
     }
 
     // if (m_driverController.getWantsScoreCoral()) {
@@ -221,7 +221,7 @@ public class Robot extends LoggedRobot {
     // RobotTelemetry.print("Resetting elevator");
     // m_elevator.reset();
     // }
-    */
+    
   }
 
   @Override
