@@ -72,7 +72,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
-    CameraServer.startAutomaticCapture();
+//    CameraServer.startAutomaticCapture();
 
     setupLogging();
 
@@ -216,12 +216,17 @@ public class Robot extends LoggedRobot {
     // m_elevator.goToElevatorStow();
     // }
 
-    // if (m_operatorController.getWantsElevatorReset() ||
-    // m_driverController.getWantsElevatorReset()) {
-    // RobotTelemetry.print("Resetting elevator");
-    // m_elevator.reset();
-    // }
+     if (m_operatorController.getWantsElevatorReset()) {
+     RobotTelemetry.print("Resetting elevator");
+     m_elevator.reset();
+     m_elevator.stop();
+     }
     
+     double ePower = m_operatorController.getFilteredAxis(0);
+     if (Math.abs(ePower) > 0.05) {
+      m_elevator.setElevatorPower(ePower);
+     }
+
   }
 
   @Override

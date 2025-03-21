@@ -54,4 +54,5 @@ public class OperatorController extends FilteredController {
   public boolean getWantsStopAlgae() {
     return this.getHatRight();
   }
+
 }

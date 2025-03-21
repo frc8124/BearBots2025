@@ -64,7 +64,7 @@ public class Elevator extends Subsystem {
 
     elevatorConfig.smartCurrentLimit(Constants.Elevator.kMaxCurrent);
 
-    elevatorConfig.idleMode(IdleMode.kBrake);
+    elevatorConfig.idleMode(IdleMode.kCoast);
 
     // Cannot use SparkMax controller limit switch function at this time, because
     // we do not have the stupid connector to plug the switch into the controller.
@@ -109,6 +109,7 @@ public class Elevator extends Subsystem {
     boolean is_elevator_pos_control = false;
 
     ElevatorState state = ElevatorState.STOW;
+
   }
 
   /*-------------------------------- Generic Subsystem Functions --------------------------------*/
@@ -131,7 +132,7 @@ public class Elevator extends Subsystem {
 
     prevUpdateTime = curTime;
 
-    if (mLowerLimitSwitch.get()) {
+    if (!mLowerLimitSwitch.get()) {
       // Have hit limit switch
       reset();
     }
@@ -184,6 +185,7 @@ public class Elevator extends Subsystem {
     putNumber("Output/Right", mRightMotor.getAppliedOutput());
 
     putNumber("State", mPeriodicIO.state);
+    putBoolean("Limit Switch", mLowerLimitSwitch.get() );
   }
 
   @Override
